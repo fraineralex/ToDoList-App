@@ -1,0 +1,51 @@
+<main>
+    <section class="text-center container">
+        <div class="row">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-bold mt-4 text-white"><i class='bx bxs-home'></i> Tasks</h1>
+                <p class="lead text text-secondary mt-1">Welcome to your task list, here we will show you all the tasks
+                    you have created.
+                </p>
+                <p>
+                    <a class="btn btn-primary mt-1 new-task"><i class='bx bx-task'></i> Create new
+                        task</a>
+                </p>
+            </div>
+
+            <div class="row mx-auto mt-4">
+                {{#if tasks}}
+                    {{#each tasks as |task|}}
+
+                    <div class="col-md-8 mx-auto">
+                        <div class="task">
+                            <div class=" text-start task-text">
+                                <div class="form-check {{#if task.isCompleted}}text-decoration-line-through{{/if}}">
+                                    <form method="post" action="/completed-task/{{../place}}?taskId={{task.id}}" class="d-inline">
+                                        <input id="loading" class="form-check-input" type="checkbox"
+                                            onChange="this.form.submit()" id="defaultCheck1" name="TaskId" {{#if
+                                            task.isCompleted}}checked{{/if}}>
+                                    </form>
+
+                                    {{task.content}}
+
+                                    <button id="btn-delete" onclick="DeleteTask('{{task.id}}', '{{../place}}')"
+                                        class="btn btn-sm btn-danger float-end" type="button"><i
+                                            class='bx bxs-trash'></i></button>
+
+
+                                    <a class="btn btn-sm btn-primary float-end me-2 edit-task"
+                                        onclick='EditTask("{{task.content}}", "{{task.id}}", "{{../place}}")'><i
+                                            class='bx bxs-edit'></i></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                {{else}}
+                    <h4 class="text-center text-white mb-5 mt-5">You haven't created any task yet, try to create one first ;)</h4>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+</main>
