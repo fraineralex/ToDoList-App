@@ -7,8 +7,18 @@
                 <p class="fs-3 fw-bold text-secondary mt-1 text-center">Welcome to your To Do List, log in and start
                     interacting
                     with your tasks.</p>
+                <p class="text-center">
+                    <i class="text-white fs-5 fw-bold d-block">If you don't have an account you can log in with a
+                        temporary user.</i>
+                <form method="post" action="/new-temporal-user" class="text-center">
+                    <button type="submit" class="btn btn-info btn-lg mt-1"><i class='bx bx-user'></i> Get temporal
+                        user</button>
+                    <input id="_csrf" type="hidden" name="_csrf" value="{{csrfToken}}">
+                </form>
 
-                <div class="col-10 mx-auto card bg-dark text-white mt-5" style="border-radius: 1rem;">
+                </p>
+
+                <div class="col-10 mx-auto card bg-dark text-white mt-5 mb-5" style="border-radius: 1rem;">
                     <div class="card-body">
 
                         <h2 class="fw-bold mb-3 text-uppercase text-center mt-2">Login</h2>

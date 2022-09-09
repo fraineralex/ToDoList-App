@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const axios = require("axios");
 
 exports.GetLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -16,9 +17,7 @@ exports.PostLogin = async (req, res, next) => {
 
   const user = await User.findOne({ where: { username: username } });
   const passwordCorrect =
-    user === null
-      ? false
-      : await bcrypt.compare(password, user.password);
+    user === null ? false : await bcrypt.compare(password, user.password);
 
   if (!(user && passwordCorrect)) {
     req.flash("errors", "Invalid user or password");
@@ -72,7 +71,11 @@ exports.PostSignup = (req, res, next) => {
       bcrypt
         .hash(password, 12)
         .then((hashedPassword) => {
-          User.create({ fullName: fullName, username: username, password: hashedPassword })
+          User.create({
+            fullName: fullName,
+            username: username,
+            password: hashedPassword,
+          })
             .then((user) => {
               res.redirect("/");
             })
@@ -86,5 +89,66 @@ exports.PostSignup = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+    });
+};
+
+exports.PostTemporalUser = async (req, res, next) => {
+  const options = {
+    method: "GET",
+    url: "https://random-username-generate.p.rapidapi.com/",
+    params: {
+      locale: "en_US",
+      minAge: "18",
+      maxAge: "50",
+      domain: "ugener.com",
+    },
+    headers: {
+      "X-RapidAPI-Key": "d8bd6b3876mshccddf5cbce5ef61p129618jsncd1082aaa208",
+      "X-RapidAPI-Host": "random-username-generate.p.rapidapi.com",
+    },
+  };
+
+  axios
+    .request(options)
+    .then(async function (response) {
+      const newUser = response.data.items;
+
+      const user = await User.findOne({
+        where: { username: newUser.username },
+      });
+      if (user) {
+        req.flash(
+          "errors",
+          "username exits already, please pick a different one "
+        );
+        return res.redirect("/signup");
+      }
+      bcrypt
+        .hash(newUser.password, 12)
+        .then((hashedPassword) => {
+          User.create({
+            fullName: newUser.name,
+            username: newUser.username,
+            password: hashedPassword,
+            userExpiration: Date.now() + 1800000
+          })
+            .then((user) => {
+              req.session.isLoggedIn = true;
+              req.session.user = user;
+              return req.session.save((err) => {
+                console.log(err);
+                res.redirect("/home");
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    .catch(function (error) {
+      console.error(error);
     });
 };

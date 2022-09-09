@@ -18,5 +18,8 @@ router.get("/completed-tasks",isAuth, taskController.GetCompletedTasks);
 //Pending routes
 router.get("/pending-tasks",isAuth, taskController.GetPendingTasks);
 
+//User routes
+router.get("/user-information",isAuth, taskController.GetUserInformation);
+
 
 module.exports = router;

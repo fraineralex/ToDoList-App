@@ -127,3 +127,17 @@ exports.GetPendingTasks = async (req, res, next) => {
     place: "pending-tasks",
   });
 };
+
+//User information
+exports.GetUserInformation = async (req, res, next) => {
+  const user = await Users.findOne({
+    where: { id: req.user.id },
+  });
+
+
+  res.render("client/user-information", {
+    pageTitle: "User information",
+    userActive: true,
+    user: user.dataValues,
+  });
+};

@@ -21,7 +21,7 @@ app.engine(
   "hbs",
   expressHbs({
     layoutsDir: "views/layouts/",
-    defaultLayout: "main-layout2",
+    defaultLayout: "main-layout",
     extname: "hbs",
     helpers: {
       equalValue: compareHelpers.EqualValue,
@@ -96,7 +96,7 @@ Tasks.belongsTo(User, { constraint: true, onDelete: "CASCADE" });
 User.hasMany(Tasks);
 
 sequelize
-  .sync()
+  .sync({alter: true})
   .then((result) => {
     app.listen(5000);
   })

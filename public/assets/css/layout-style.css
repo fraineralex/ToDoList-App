@@ -17,6 +17,14 @@
 	--light: #EEE;
 }
 
+.profile-image img{
+  height: 150%;
+  width: 80%;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
 .sidebar{
   position: fixed;
   left: 0;
