@@ -23,6 +23,7 @@ function menuBtnChange() {
 }
 
 let newTaskbtn = document.querySelector(".new-task");
+var csrfToken = document.getElementById('_csrf').value;
 
 newTaskbtn.addEventListener("click", async () => {
   const { value: task } = await Swal.fire({
@@ -30,6 +31,7 @@ newTaskbtn.addEventListener("click", async () => {
     html: `<form method="POST" action="/create-task" id="frm-new-task"> 
           <input type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" required>
           <input type="hidden" value="1" name="UserId">
+          <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,
     showCancelButton: true,
     inputValidator: (value) => {
@@ -51,6 +53,7 @@ async function EditTask(content, taskId, place) {
     html: `<form method="POST" action="/edit-task/${place}" id="frm-edit-task"> 
           <input type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" value='${content}' required>
           <input type="hidden" value='${taskId}' name="TaskId">
+          <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,
     showCancelButton: true,
     inputValidator: (value) => {
@@ -84,12 +87,19 @@ function DeleteTask(taskId, place) {
         let form = document.createElement("form");
         form.action = `/delete-task/${place}`;
         form.method = "POST";
-        let input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "TaskId";
-        input.value = `${taskId}`;
+
+        let inputTaskId = document.createElement("input");
+        inputTaskId.type = "hidden";
+        inputTaskId.name = "TaskId";
+        inputTaskId.value = `${taskId}`;
+
+        let inputToken = document.createElement("input");
+        inputToken.type = "hidden";
+        inputToken.name = "_csrf";
+        inputToken.value = `${csrfToken}`;
   
-        form.appendChild(input);
+        form.appendChild(inputTaskId);
+        form.appendChild(inputToken);
   
         document.body.append(form);
         form.submit();

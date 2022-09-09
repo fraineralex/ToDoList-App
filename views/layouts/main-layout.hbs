@@ -1,111 +1,145 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
+<!DOCTYPE html>
+<!-- Created by CodingLab |www.youtube.com/c/CodingLabYT-->
+<html lang="en" dir="ltr">
 
-     {{#if loginCSS}}
+<head>
+  <meta charset="UTF-8">
+  <title>{{pageTitle}}</title>
+  <link rel="stylesheet" href="/assets/css/{{#if logOut}}login{{else}}layout-style{{/if}}.css">
+  <link rel="stylesheet" href="/assets/css/styleLogin.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+  <!-- Boxicons CDN Link -->
+  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fontawesome CDN Link -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-      <link rel="stylesheet" href="/assets/css/login.css">
 
-     {{/if}}
-    <title>{{pageTitle}}</title>
-  </head>
+{{#if logOut}}
 
-  <body>
+<body class="body">
 
+  <section>
 
-{{#if loginActive}}
-
-{{else}}
-   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">Heroes</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarCollapse"
-          aria-controls="navbarCollapse"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item">
-              <a class="nav-link {{#if homeActive}}active{{/if}}" aria-current="page" href="/">Home</a>
-            </li>
-             {{#if isAuthenticated}}
-                <li class="nav-item">
-                  <a class="nav-link {{#if racesActive}}active{{/if}}" href="/races">Races</a>
-                </li>
-            {{/if}}
-          </ul>
-
-          <div class="d-flex">
-
-          <ul class="navbar-nav me-auto mb-2 mb-md-0">
-
-             {{#if isAuthenticated}}
-
-              <li class="nav-item">
-               <form action="/logout" method="POST">                 
-                  <button class="btn btn-danger" type="submit">Logout</button>
-                </form>
-              </li>
-
-            {{else}}
-               <li class="nav-item">
-                  <a class="nav-link" aria-current="page" href="/login">Login</a>
-                </li>
-
-               <li class="nav-item">
-                  <a class="nav-link {{#if signupActive}}active{{/if}}" aria-current="page" href="/signup">Signup</a>
-                </li>
-
-           {{/if}}
-            
-        
-          </ul>
-         
-          </div>
-
-        </div>
-      </div>
-    </nav>
-{{/if}} 
- 
-
-    <main class="container">
-
-         {{#if hasErrorMessages}} 
+    {{#if hasErrorMessages}}
 
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <ul>
+        {{#each errorMessages}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    {{/if}}
+
+    {{{body}}}
+
+  </section>
+  {{else}}
+
+  <body>
+    <div class="sidebar">
+      <div class="logo-details">
+        <i class='bx bx-notepad icon'></i>
+        <div class="logo_name">To Do List</div>
+        <i class='bx bx-menu' id="btn"></i>
+      </div>
+
+      <li>
+        <i class='bx bx-search'></i>
+        <input type="text" placeholder="Search...">
+        <span class="custom-tooltip">Search</span>
+      </li>
+      <li>
+        <a href="/home" class="{{#if homeActive}}bg-light{{/if}}">
+          <i class='bx bx-home-alt {{#if homeActive}}text-dark{{/if}}'></i>
+          <span class="links_name {{#if homeActive}}text-dark{{/if}}">Tasks</span>
+        </a>
+        <span class="custom-tooltip">Tasks</span>
+      </li>
+      <li>
+        <a href="/completed-tasks" class="{{#if completedActive}}bg-light{{/if}}">
+          <i class='bx bx-check-square {{#if completedActive}}text-dark{{/if}}'></i>
+          <span class="links_name {{#if completedActive}}text-dark{{/if}}">Completed</span>
+        </a>
+        <span class="custom-tooltip">Completed</span>
+      </li>
+      <li>
+        <a href="/pending-tasks" class="{{#if pendingActive}}bg-light{{/if}}">
+          <i class='bx bx-time-five {{#if pendingActive}}text-dark{{/if}}'></i>
+          <span class="links_name {{#if pendingActive}}text-dark{{/if}}">Pending</span>
+        </a>
+        <span class="custom-tooltip">Pending</span>
+      </li>
+      {{#if isAuthenticated}}
+      <li>
+        <a href="/user" class="{{#if userActive}}bg-light{{/if}}">
+          <i class='bx bx-user {{#if userActive}}text-dark{{/if}}'></i>
+          <span class="links_name {{#if userActive}}text-dark{{/if}}">User</span>
+        </a>
+        <span class="custom-tooltip">User</span>
+      </li>
+      <li class="profile">
+        <div class="profile-details">
+          <img src="/images/profile.jpg" alt="profileImg">
+          <div class="name_job">
+            <div class="name"><small>{{user.dataValues.fullName}}</small></div>
+            <div class="job">@{{user.dataValues.username}}</div>
+          </div>
+        </div>
+        <a href="/logout"><i class='bx bx-log-out' id="log_out"></i></a>
+      </li>
+      {{/if}}
+
+    </div>
+
+
+    <section class="home-section">
+
+      {{#if hasErrorMessages}}
+
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <ul>
           {{#each errorMessages}}
-            <li>{{this}}</li>
+          <li>{{this}}</li>
           {{/each}}
-        </ul>  
+        </ul>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>   
-    
-    {{/if}}
+      </div>
+
+      {{/if}}
+
+      {{#if isAuthenticated}}
 
       {{{body}}}
 
-    </main>
+    </section>
+    {{else}}
+    <section class="text-center container">
+      <div class="row">
+        <div class="col-lg-6 col-md-8 mx-auto">
+          <h1 class="fw-bold mt-4 text-white"><i class='bx bx-notepad icon'></i> To Do List</h1>
+          <p class="fs-3 fw-bold text-secondary mt-1 text-center">Welcome to your To Do List, log in and start
+            interacting
+            with your tasks.</p>
+          <p>
+            <a href="/" class="btn btn-lg px-2 btn-primary mt-1"><i class='bx bx-log-in'></i> Sing in</a>
+          </p>
+        </div>
+    </section>
+    </section>
+    {{/if}}
 
-    <script src="/assets/js/bootstrap/bootstrap.js"></script>
-    <script
-  src="https://code.jquery.com/jquery-3.6.0.min.js"
-  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-  crossorigin="anonymous"></script>
+    {{/if}}
 
-  {{#if homeActive}}<script src="/assets/js/index/index.js"></script>{{/if}}
+    <script src="/assets/js/layoutScript.js"></script>
+    <script src="/assets/js/index/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   </body>
 

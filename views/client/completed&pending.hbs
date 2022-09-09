@@ -1,5 +1,6 @@
 <main>
     <section class="text-center container">
+        <input id="_csrf" type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="row">
             <div class="col-lg-6 col-md-8 mx-auto">
                 {{#if completedTask}}
@@ -25,6 +26,7 @@
                                 <div class="form-check {{#if task.isCompleted}}text-decoration-line-through{{/if}}">
                                     <form method="post" action="/completed-task/{{../place}}?taskId={{task.id}}"
                                         class="d-inline">
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                         <input id="loading" class="form-check-input" type="checkbox"
                                             onChange="this.form.submit()" id="defaultCheck1" name="TaskId" {{#if
                                             task.isCompleted}}checked{{/if}}>

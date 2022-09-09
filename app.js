@@ -8,6 +8,8 @@ const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const session = require("express-session");
 const flash = require("connect-flash");
+const csrf = require("csurf");
+const csrfProtection = csrf();
 
 const errorController = require("./controllers/ErrorController");
 
@@ -51,6 +53,7 @@ app.use(
   session({ secret: "anything", resave: true, saveUninitialized: false })
 );
 
+app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -75,6 +78,7 @@ app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.errorMessages = errors;
   res.locals.hasErrorMessages = errors.length > 0;
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
