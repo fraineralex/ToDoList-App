@@ -7,7 +7,6 @@ We can create an account in the application to log in or also log in with a temp
 The app also has options to change the personal information and login credentials of temporary and permanent users and has a log that saves all logins and registrations made in the app.
 
 ##### test the demo [HERE]( "HERE")
-
 <br><br>
 ## Technologies 
 
