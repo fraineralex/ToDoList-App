@@ -150,9 +150,9 @@ async function UpdateTemporalProfile(userId, fullName) {
           <label for="userName" class="form-label text-dark float-start fw-bold">Username</label>
           <input id="username" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new username" name="Username" required>
           <label for="password" class="form-label text-dark float-start fw-bold">New Password</label>
-          <input id="password" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
+          <input id="password" type="password" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
           <label for="confirmPassword" class="form-label text-dark float-start fw-bold">Confirm New Password</label>
-          <input id="confirmPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
+          <input id="confirmPassword" type="password" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
           <input type="hidden" value='${userId}' name="UserId">
           <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,
@@ -201,11 +201,11 @@ async function UpdatePermanentProfile(userId) {
           <label for="userName" class="form-label text-dark float-start fw-bold">Username</label>
           <input id="username" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new username" name="Username" required>
           <label for="currentlyPassword" class="form-label text-dark float-start fw-bold">Currently Password<i class="text-danger ms-0">*</i></label>
-          <input id="currentlyPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your last password" name="CurrentlyPassword" required>
+          <input id="currentlyPassword" type="password" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your last password" name="CurrentlyPassword" required>
           <label for="password" class="form-label text-dark float-start fw-bold">Password</label>
-          <input id="password" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
+          <input id="password" type="password" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
           <label for="confirmPassword" class="form-label text-dark float-start fw-bold">Confirm Password</label>
-          <input id="confirmPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
+          <input id="confirmPassword" type="password" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
           <input type="hidden" value='${userId}' name="UserId">
           <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,

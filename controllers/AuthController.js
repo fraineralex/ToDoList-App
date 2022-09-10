@@ -199,7 +199,7 @@ exports.PostTemporalUser = async (req, res, next) => {
               })
                 .then(() => {
                   req.session.isLoggedIn = true;
-                  req.session.user = user;
+                  req.session.user = createdUser;
                   return req.session.save((err) => {
                     console.log(err);
                     res.redirect("/home");

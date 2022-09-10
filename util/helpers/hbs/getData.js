@@ -11,7 +11,7 @@ exports.GetDate = (date) => {
 exports.IsExpired = (date) => {
   if(date){
   const expirationDate = Date.parse(date);
-  const dateNow = Date.parse(moment().toDate()) + 300000;
+  const dateNow = Date.parse(moment().toDate()) + 300000; // Add 5 minutes to current date.
 
   /* This is a conditional statement that checks if the expiration date is less than or equal to the
   current date. If it is, it returns true, otherwise it returns false. */
