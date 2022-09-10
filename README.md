@@ -39,7 +39,7 @@ The app also has options to change the personal information and login credential
  <br><br>
  ## Project images
  
- [![Home-example.jpg](https://i.postimg.cc/SsDwk41n/Home-example.jpg)](https://postimg.cc/cgtDBpSW)
+ [![Home.png](https://i.postimg.cc/XJmP383G/Home.png)](https://postimg.cc/MM05m1nq)
 
 <br><br>
 ## What do you need to run this project ?
@@ -66,12 +66,17 @@ npm install
 
 - When all packages are installed, you can run the project using the this command 
 ```cmd
-node app.js
+npm start
 ```
 
 - Now you need to copy and past this path in your brouser 
-   - 127.0.0.1:5000/
-
+```cmd
+127.0.0.1:5000 
+```
+Or
+```cmd
+localhost:5000 
+```
 <br><br>
 ## Developer
 - Frainer Alexander -> [Github](https://github.com/Fraineralex) 
