@@ -107,7 +107,7 @@ Users.hasMany(Records);
 sequelize
   .sync()
   .then((result) => {
-    app.listen(5001);
+    app.listen(5000);
   })
   .catch((err) => {
     console.log(err);
