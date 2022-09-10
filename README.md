@@ -39,7 +39,7 @@ The app also has options to change the personal information and login credential
  <br><br>
  ## Project images
  
- [![Home.png](https://i.postimg.cc/XJmP383G/Home.png)](https://postimg.cc/MM05m1nq)
+ [![Home.png](https://prnt.sc/8fMIc0ZFBTBZ)](https://prnt.sc/8fMIc0ZFBTBZ)
  
 
 <br><br>
