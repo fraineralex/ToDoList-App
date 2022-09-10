@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
+const { Op } = require("sequelize");
 
 exports.GetLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -15,7 +16,9 @@ exports.PostLogin = async (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  const user = await User.findOne({ where: { username: username } });
+  const user = await User.findOne( {where: { 
+    [Op.and]: 
+    [{username: username}, {[Op.or]: [{userExpiration: null}, {userExpiration: {[Op.gt]: Date.now()}}]} ]}});
   const passwordCorrect =
     user === null ? false : await bcrypt.compare(password, user.password);
 
@@ -124,13 +127,13 @@ exports.PostTemporalUser = async (req, res, next) => {
         return res.redirect("/signup");
       }
       bcrypt
-        .hash(newUser.password, 12)
+        .hash("default123", 12)
         .then((hashedPassword) => {
           User.create({
             fullName: newUser.name,
             username: newUser.username,
             password: hashedPassword,
-            userExpiration: Date.now() + 1800000
+            userExpiration: Date.now() + 1800000,
           })
             .then((user) => {
               req.session.isLoggedIn = true;
@@ -151,4 +154,346 @@ exports.PostTemporalUser = async (req, res, next) => {
     .catch(function (error) {
       console.error(error);
     });
+};
+
+exports.PostMakePermanentUser = (req, res, next) => {
+  const userId = req.body.UserId;
+
+  User.update({ userExpiration: null }, { where: { id: userId } })
+    .then(() => {
+      res.redirect("/user-information");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+exports.PostUpdateTemporalProfile = (req, res, next) => {
+  const fullName = req.body.FullName;
+  const username = req.body.Username;
+  const password = req.body.Password;
+  const confirmPassword = req.body.ConfirmPassword;
+  const userId = req.body.UserId;
+
+  if (password != confirmPassword) {
+    req.flash("errors", "Password and confirm password no equals");
+    return res.redirect("/user-information");
+  }
+
+  User.findOne({ where: { username: username } })
+    .then((user) => {
+      if (user) {
+        req.flash(
+          "errors",
+          "username exits already, please pick a different one"
+        );
+        return res.redirect("/user-information");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  if (username && fullName && password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            fullName: fullName,
+            username: username,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (username && fullName) {
+    User.update(
+      {
+        fullName: fullName,
+        username: username,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (username && password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            username: username,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (fullName && password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            fullName: fullName,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (username) {
+    User.update(
+      {
+        username: username,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (fullName) {
+    User.update(
+      {
+        fullName: fullName,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    req.flash("errors", "An error has occurred, please try again");
+    return res.redirect("/user-information");
+  }
+};
+
+exports.PostUpdatePermanentProfile = async (req, res, next) => {
+  const fullName = req.body.FullName;
+  const username = req.body.Username;
+  const currentlyPassword = req.body.CurrentlyPassword;
+  const password = req.body.Password;
+  const confirmPassword = req.body.ConfirmPassword;
+  const userId = req.body.UserId;
+
+  if (!currentlyPassword) {
+    req.flash("errors", "You must insert your current password");
+    return res.redirect("/user-information");
+  }
+
+  if (username) {
+    User.findOne({ where: { username: username } })
+      .then((user) => {
+        if (user) {
+          req.flash(
+            "errors",
+            "username exits already, please pick a different one"
+          );
+          return res.redirect("/user-information");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  if (password != confirmPassword) {
+    req.flash("errors", "Password and confirm password no equals");
+    return res.redirect("/user-information");
+  }
+
+  const user = await User.findOne({ where: { id: userId } });
+  const passwordCorrect =
+    user === null
+      ? false
+      : await bcrypt.compare(currentlyPassword, user.password);
+
+  if (!(user && passwordCorrect)) {
+    req.flash("errors", "Invalid password, try again");
+    return res.redirect("/user-information");
+  }
+
+  if (fullName && password && username) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            fullName: fullName,
+            username: username,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (fullName && username) {
+    User.update(
+      {
+        username: username,
+        fullName: fullName,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (fullName && password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            fullName: fullName,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (password && username) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            username: username,
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (fullName) {
+    User.update(
+      {
+        fullName: fullName,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (username) {
+    User.update(
+      {
+        username: username,
+      },
+      { where: { id: userId } }
+    )
+      .then((user) => {
+        res.redirect("/user-information");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else if (password) {
+    bcrypt
+      .hash(password, 12)
+      .then((hashedPassword) => {
+        User.update(
+          {
+            password: hashedPassword,
+          },
+          { where: { id: userId } }
+        )
+          .then((user) => {
+            res.redirect("/user-information");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    req.flash("errors", "An error has occurred, please try again");
+    return res.redirect("/user-information");
+  }
 };

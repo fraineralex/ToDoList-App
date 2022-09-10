@@ -18,44 +18,78 @@
 
             <div class="row mx-auto mt-4">
                 {{#if tasks}}
-                    {{#each tasks as |task|}}
+                {{#each tasks as |task|}}
 
-                    <div class="col-md-8 mx-auto">
-                        <div class="task">
-                            <div class=" text-start task-text">
-                                <div class="form-check {{#if task.isCompleted}}text-decoration-line-through{{/if}}">
-                                    <form method="post" action="/completed-task/{{../place}}?taskId={{task.id}}"
-                                        class="d-inline">
-                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                        <input id="loading" class="form-check-input" type="checkbox"
-                                            onChange="this.form.submit()" id="defaultCheck1" name="TaskId" {{#if
-                                            task.isCompleted}}checked{{/if}}>
-                                    </form>
+                <div class="col-md-8 mx-auto">
+                    <div class="task">
+                        <div class=" text-start task-text">
+                            <div class="form-check {{#if task.isCompleted}}text-decoration-line-through{{/if}}">
+                                <form method="post" action="/completed-task/{{../place}}?taskId={{task.id}}"
+                                    class="d-inline">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                    <input id="loading" class="form-check-input" type="checkbox"
+                                        onChange="this.form.submit()" id="defaultCheck1" name="TaskId" {{#if
+                                        task.isCompleted}}checked{{/if}}>
+                                </form>
 
-                                    {{task.content}}
+                                {{task.content}}
 
-                                    <button id="btn-delete" onclick="DeleteTask('{{task.id}}', '{{../place}}')"
-                                        class="btn btn-sm btn-danger float-end" type="button"><i
-                                            class='bx bxs-trash'></i></button>
+                                <button id="btn-delete" onclick="DeleteTask('{{task.id}}', '{{../place}}')"
+                                    class="btn btn-sm btn-danger float-end" type="button"><i
+                                        class='bx bxs-trash'></i></button>
 
 
-                                    <a class="btn btn-sm btn-primary float-end me-2 edit-task"
-                                        onclick='EditTask("{{task.content}}", "{{task.id}}", "{{../place}}")'><i
-                                            class='bx bxs-edit'></i></a>
+                                <a class="btn btn-sm btn-primary float-end me-2 edit-task"
+                                    onclick='EditTask("{{task.content}}", "{{task.id}}", "{{../place}}")'><i
+                                        class='bx bxs-edit'></i></a>
 
-                                </div>
                             </div>
                         </div>
                     </div>
-                    {{/each}}
+                </div>
+                {{/each}}
                 {{else}}
-                    {{#if completedTask}}
-                        <h4 class="text-center text-white mb-5 mt-5">You haven't completed any tasks so far, try completing some ;)</h4>
-                    {{else}}
-                        <h4 class="text-center text-white mb-5 mt-5">You don't have any pending tasks so far, good job! ;)</h4>
-                    {{/if}}
+                {{#if completedTask}}
+                <h4 class="text-center text-white mb-5 mt-5">You haven't completed any tasks so far, try completing some
+                    ;)</h4>
+                {{else}}
+                <h4 class="text-center text-white mb-5 mt-5">You don't have any pending tasks so far, good job! ;)</h4>
+                {{/if}}
                 {{/if}}
             </div>
         </div>
     </section>
+    {{#if (isExpired user.userExpiration)}}
+    <div class="row mx-auto">
+        <div class="col-lg-4 mx-auto">
+            <div class="position-absolute top-0 mt-5 mx-auto" style="max-width: 33%">
+                <div class="alert align-items-center text-bg-dark border-0 mx-auto" role="alert" aria-live="assertive"
+                    aria-atomic="true" style="border-radius: 1rem;">
+                    <div class="d-flex">
+                        <div class="alert-body">
+                            <h1 class="text-center fw-bold text-warning">Warning</h1>
+                            <div class="col-6 profile-image mt-0 mx-auto">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3756/3756712.png" alt="profile"
+                                    class="ms-3">
+                            </div>
+                            <p class="fs-5 fw-bold text-white px-2 mb-3">This temporary account will be disabled
+                                in {{getMinutes user.userExpiration}}, you
+                                must create an account or make this
+                                permanent.</p>
+                            <button type="button" class="btn btn-light me-2 m-auto float-end ms-2"
+                                data-bs-dismiss="alert">I get
+                                it</button>
+                            <form method="post" action="/make-permanent-user" class="text-center d-inline float-end">
+                                <button type="submit" class="btn btn-info d-inline">Make
+                                    permanent</button>
+                                <input type="hidden" name="UserId" value="{{user.id}}">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
 </main>

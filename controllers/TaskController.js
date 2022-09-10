@@ -1,11 +1,12 @@
 const Users = require("../models/User");
 const Tasks = require("../models/Tasks");
 const { Op } = require("sequelize");
+const bcrypt = require("bcryptjs");
 
 //Home controllers
 exports.GetHome = async (req, res, next) => {
   let tasks;
-  let user;
+  let user = {dataValues: ""}
 
   if (req.user) {
     const arrayTasks = await Tasks.findAll({
@@ -22,12 +23,17 @@ exports.GetHome = async (req, res, next) => {
     homeActive: true,
     place: "home",
     tasks,
-    user,
+    user: user.dataValues,
   });
 };
 
 exports.PostCreateTask = (req, res, next) => {
   const content = req.body.Task;
+
+  if(!content){
+    req.flash("errors", "Task content cannot be empty, please try again");
+    return res.redirect("/home");
+  }
 
   Tasks.create({
     content: content,
@@ -86,6 +92,11 @@ exports.PostEditTask = (req, res, next) => {
   const taskId = req.body.TaskId;
   let place = req.params.Place;
 
+  if(!content){
+    req.flash("errors", "Task content cannot be empty, please try again");
+    return res.redirect(`/${place}`);
+  }
+
   Tasks.update({ content: content }, { where: { id: taskId, userId: req.user.id } })
     .then(() => {
       res.redirect(`/${place}`);
@@ -103,12 +114,17 @@ exports.GetCompletedTasks = async (req, res, next) => {
   });
   const tasks = arrayTasks.map((result) => result.dataValues);
 
+  const user = await Users.findOne({
+    where: { id: req.user.id },
+  });
+
   res.render("client/completed&pending", {
     pageTitle: "Completed tasks",
     completedActive: true,
     tasks,
     completedTask: true,
     place: "completed-tasks",
+    user: user.dataValues,
   });
 };
 
@@ -120,11 +136,16 @@ exports.GetPendingTasks = async (req, res, next) => {
   });
   const tasks = arrayTasks.map((result) => result.dataValues);
 
+  const user = await Users.findOne({
+    where: { id: req.user.id },
+  });
+
   res.render("client/completed&pending", {
     pageTitle: "Pending tasks",
     pendingActive: true,
     tasks,
     place: "pending-tasks",
+    user: user.dataValues,
   });
 };
 
@@ -134,10 +155,14 @@ exports.GetUserInformation = async (req, res, next) => {
     where: { id: req.user.id },
   });
 
+  let defaultPassword;
+  defaultPassword = await bcrypt.compare('default123', user.dataValues.password);
+
 
   res.render("client/user-information", {
     pageTitle: "User information",
     userActive: true,
     user: user.dataValues,
+    defaultPassword,
   });
 };

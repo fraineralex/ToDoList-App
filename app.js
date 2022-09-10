@@ -15,7 +15,7 @@ const errorController = require("./controllers/ErrorController");
 
 const app = express();
 
-const compareHelpers = require("./util/helpers/hbs/compare");
+const getData = require("./util/helpers/hbs/getData");
 
 app.engine(
   "hbs",
@@ -24,7 +24,9 @@ app.engine(
     defaultLayout: "main-layout",
     extname: "hbs",
     helpers: {
-      equalValue: compareHelpers.EqualValue,
+      getDate: getData.GetDate,
+      isExpired: getData.IsExpired,
+      getMinutes: getData.GetMinutes,
     },
   })
 );
@@ -96,7 +98,7 @@ Tasks.belongsTo(User, { constraint: true, onDelete: "CASCADE" });
 User.hasMany(Tasks);
 
 sequelize
-  .sync({alter: true})
+  .sync()
   .then((result) => {
     app.listen(5000);
   })

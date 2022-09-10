@@ -12,5 +12,10 @@ router.post("/signup", authController.PostSignup);
 
 //Temporal user
 router.post("/new-temporal-user", authController.PostTemporalUser);
+router.post("/make-permanent-user", authController.PostMakePermanentUser);
+router.post("/update-temporal-profile", authController.PostUpdateTemporalProfile);
+
+//Permanent user
+router.post("/update-permanent-profile", authController.PostUpdatePermanentProfile);
 
 module.exports = router;

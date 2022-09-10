@@ -23,27 +23,32 @@ function menuBtnChange() {
 }
 
 let newTaskbtn = document.querySelector(".new-task");
-var csrfToken = document.getElementById('_csrf').value;
+var csrfToken = document.getElementById("_csrf").value;
 
 newTaskbtn.addEventListener("click", async () => {
   const { value: task } = await Swal.fire({
     title: "Input your new task",
     html: `<form method="POST" action="/create-task" id="frm-new-task"> 
-          <input type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" required>
+          <input id="content" type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" required>
           <input type="hidden" value="1" name="UserId">
           <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,
     showCancelButton: true,
-    inputValidator: (value) => {
-      if (!value) {
-        return "You need to write something!";
-      }
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        document.getElementById("content").value
+      ];
     },
   });
 
   if (task) {
-    let form = document.querySelector("#frm-new-task");
-    form.submit();
+    if (task.filter(Boolean).length < 1) {
+      Swal.fire("Error!", "Task content cannot be empty", "error");
+    }else{
+      let form = document.querySelector("#frm-new-task");
+      form.submit();
+    }
   }
 });
 
@@ -51,21 +56,26 @@ async function EditTask(content, taskId, place) {
   const { value: task } = await Swal.fire({
     title: "Update your task",
     html: `<form method="POST" action="/edit-task/${place}" id="frm-edit-task"> 
-          <input type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" value='${content}' required>
+          <input id="content" type="text" class="form-control border-secondary border border-2"  placeholder="Enter your new task" name="Task" value='${content}' required>
           <input type="hidden" value='${taskId}' name="TaskId">
           <input type="hidden" name="_csrf" value="${csrfToken}">
           </form>`,
     showCancelButton: true,
-    inputValidator: (value) => {
-      if (!value) {
-        return "You need to write something!";
-      }
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        document.getElementById("content").value
+      ];
     },
   });
 
   if (task) {
-    let form = document.querySelector("#frm-edit-task");
-    form.submit();
+    if (task.filter(Boolean).length < 1) {
+      Swal.fire("Error!", "Task content cannot be empty", "error");
+    }else{
+      let form = document.querySelector("#frm-edit-task");
+      form.submit();
+    }
   }
 }
 
@@ -97,13 +107,102 @@ function DeleteTask(taskId, place) {
         inputToken.type = "hidden";
         inputToken.name = "_csrf";
         inputToken.value = `${csrfToken}`;
-  
+
         form.appendChild(inputTaskId);
         form.appendChild(inputToken);
-  
+
         document.body.append(form);
         form.submit();
       }, 1000);
     }
   });
+}
+
+async function UpdateTemporalProfile(userId, fullName) {
+  const { value: formValues } = await Swal.fire({
+    title: "Update your profile",
+    html: `
+          <label" class="form-label text-secondary text-center mt-2 fw-bold">Just fill in the fields you want to update.</label>
+          <form method="POST" action="/update-temporal-profile" id="frm-update-temporal-profile">
+          <label for="fullName" class="form-label text-dark float-start mt-2 fw-bold">Full Name</label>
+          <input id="fullName" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new full name" name="FullName" value='${fullName}' required>
+          <label for="userName" class="form-label text-dark float-start fw-bold">Username</label>
+          <input id="username" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new username" name="Username" required>
+          <label for="password" class="form-label text-dark float-start fw-bold">New Password</label>
+          <input id="password" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
+          <label for="confirmPassword" class="form-label text-dark float-start fw-bold">Confirm New Password</label>
+          <input id="confirmPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
+          <input type="hidden" value='${userId}' name="UserId">
+          <input type="hidden" name="_csrf" value="${csrfToken}">
+          </form>`,
+    showCancelButton: true,
+
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        document.getElementById("fullName").value,
+        document.getElementById("username").value,
+        document.getElementById("password").value,
+        document.getElementById("confirmPassword").value,
+      ];
+    },
+  });
+
+  if (formValues) {
+    if (formValues.filter(Boolean).length < 1) {
+      Swal.fire("Error!", "You must complete at least one field.", "error");
+    }else if(formValues[2] !== formValues[3]) {
+      Swal.fire("Error!", "Password and confirm password no equals", "error");
+    } else{
+      let form = document.querySelector("#frm-update-temporal-profile");
+      form.submit();
+    }
+  }
+}
+
+async function UpdatePermanentProfile(userId) {
+  const { value: formValues } = await Swal.fire({
+    title: "Update your profile",
+    html: `
+           <label" class="form-label text-secondary text-center mt-2 fw-bold">Just fill in the fields you want to update and your current password</label>
+          <form method="POST" action="/update-permanent-profile" id="frm-update-permanent-profile">
+          <label for="fullName" class="form-label text-dark float-start mt-2 fw-bold">Full Name</label>
+          <input id="fullName" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new full name" name="FullName" required>
+          <label for="userName" class="form-label text-dark float-start fw-bold">Username</label>
+          <input id="username" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new username" name="Username" required>
+          <label for="currentlyPassword" class="form-label text-dark float-start fw-bold">Currently Password<i class="text-danger ms-0">*</i></label>
+          <input id="currentlyPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your last password" name="CurrentlyPassword" required>
+          <label for="password" class="form-label text-dark float-start fw-bold">Password</label>
+          <input id="password" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Enter your new password" name="Password" required>
+          <label for="confirmPassword" class="form-label text-dark float-start fw-bold">Confirm Password</label>
+          <input id="confirmPassword" type="text" class="form-control border-secondary border border-2 mb-3"  placeholder="Confirm your new password" name="ConfirmPassword" required>
+          <input type="hidden" value='${userId}' name="UserId">
+          <input type="hidden" name="_csrf" value="${csrfToken}">
+          </form>`,
+    showCancelButton: true,
+
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        document.getElementById("fullName").value,
+        document.getElementById("username").value,
+        document.getElementById("currentlyPassword").value,
+        document.getElementById("password").value,
+        document.getElementById("confirmPassword").value,
+      ];
+    },
+  });
+
+  if (formValues) {
+    if (formValues.filter(Boolean).length < 1) {
+      Swal.fire("Error!", "You must complete at least one field.", "error");
+    }else if(formValues[2] === ""){
+      Swal.fire("Error!", "You must insert your current password.", "error");
+    }else if(formValues[3] !== formValues[4]) {
+      Swal.fire("Error!", "Password and confirm password no equals", "error");
+    } else{
+      let form = document.querySelector("#frm-update-permanent-profile");
+      form.submit();
+    }
+  }
 }

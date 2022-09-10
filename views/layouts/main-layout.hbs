@@ -87,8 +87,8 @@
         <div class="profile-details">
           <img src="/images/profile.jpg" alt="profileImg">
           <div class="name_job">
-            <div class="name"><small>{{user.dataValues.fullName}}</small></div>
-            <div class="job">@{{user.dataValues.username}}</div>
+            <div class="name"><small>{{user.fullName}}</small></div>
+            <div class="job">@{{user.username}}</div>
           </div>
         </div>
         <a href="/logout"><i class='bx bx-log-out' id="log_out"></i></a>
@@ -102,13 +102,20 @@
 
       {{#if hasErrorMessages}}
 
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <ul>
-          {{#each errorMessages}}
-          <li>{{this}}</li>
-          {{/each}}
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <div class="col-md-4 position-fixed end-0 mt-3 me-2" style="max-width: 25%;">
+        <div class="alert align-items-center text-bg-danger border-0" role="alert" aria-live="assertive"
+          aria-atomic="true">
+          <div class="d-flex">
+            <div class="alert-body">
+
+              {{#each errorMessages}}
+              <p><i class='bx bxs-error-circle'></i> {{this}}</p>
+              {{/each}}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="alert"
+              aria-label="Close"></button>
+          </div>
+        </div>
       </div>
 
       {{/if}}
@@ -116,6 +123,8 @@
       {{#if isAuthenticated}}
 
       {{{body}}}
+
+
 
     </section>
     {{else}}
