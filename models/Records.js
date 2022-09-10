@@ -1,7 +1,8 @@
+/* This is importing the Sequelize library and the database connection. */
 const Sequelize = require("sequelize");
-
 const sequelize = require("../util/database");
 
+/* Creating Records table in the database. */
 const Records = sequelize.define("records", {
   id: {
     type: Sequelize.INTEGER,

@@ -1,7 +1,8 @@
+/* Importing the Sequelize library and the database connection. */
 const Sequelize = require("sequelize");
-
 const sequelize = require("../util/database");
 
+/* Creating User table in the database. */
 const User = sequelize.define("user", {
   id: {
     type: Sequelize.INTEGER,

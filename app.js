@@ -1,3 +1,4 @@
+// Importing all the required modules.
 const path = require("path");
 const express = require("express");
 const expressHbs = require("express-handlebars");
@@ -11,13 +12,15 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const csrf = require("csurf");
 const csrfProtection = csrf();
-
 const errorController = require("./controllers/ErrorController");
+const getData = require("./util/helpers/hbs/getData");
+const authRouter = require("./routes/auth");
+const homeRouter = require("./routes/taskRouter");
 
+// Initialize express app
 const app = express();
 
-const getData = require("./util/helpers/hbs/getData");
-
+// Initialize express-handlebars
 app.engine(
   "hbs",
   expressHbs({
@@ -32,11 +35,14 @@ app.engine(
   })
 );
 
+// Setting the view engine to hbs and the views directory to views.
 app.set("view engine", "hbs");
 app.set("views", "views");
 
+//middleware
 app.use(express.urlencoded({ extended: false }));
 
+// Creating a file storage object that will be used to store the image in the images folder.
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
@@ -46,19 +52,19 @@ const fileStorage = multer.diskStorage({
   },
 });
 
+//static folders
 app.use(multer({ storage: fileStorage }).single("ImagePath"));
-
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use("/images", express.static(path.join(__dirname, "images")));
 
+// This is the middleware that is used to create a session and to use flash messages.
 app.use(
   session({ secret: "anything", resave: true, saveUninitialized: false })
 );
-
 app.use(csrfProtection);
 app.use(flash());
 
+// A middleware that is used to check if the user is logged in or not.
 app.use((req, res, next) => {
   if (!req.session) {
     return next();
@@ -76,6 +82,7 @@ app.use((req, res, next) => {
     });
 });
 
+// This is a middleware that save information in the local storage for be user later.
 app.use((req, res, next) => {
   const errors = req.flash("errors");
   res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -85,21 +92,18 @@ app.use((req, res, next) => {
   next();
 });
 
-const authRouter = require("./routes/auth");
-const homeRouter = require("./routes/taskRouter");
-
+//routes
 app.use(authRouter);
 app.use(homeRouter);
-
 app.use(errorController.Get404);
 
-//relationships between users and tasks
-
+//database relationships between users, tasks and records
 Tasks.belongsTo(Users, { constraint: true, onDelete: "CASCADE" });
 Users.hasMany(Tasks);
 Records.belongsTo(Users, { constraint: true, onDelete: "NO ACTION" });
 Users.hasMany(Records);
 
+//launches the server
 sequelize
   .sync()
   .then((result) => {
