@@ -1,7 +1,9 @@
 const User = require("../models/User");
+const Records = require("../models/Records");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
 const { Op } = require("sequelize");
+const moment = require("moment");
 
 exports.GetLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -16,9 +18,19 @@ exports.PostLogin = async (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  const user = await User.findOne( {where: { 
-    [Op.and]: 
-    [{username: username}, {[Op.or]: [{userExpiration: null}, {userExpiration: {[Op.gt]: Date.now()}}]} ]}});
+  const user = await User.findOne({
+    where: {
+      [Op.and]: [
+        { username: username },
+        {
+          [Op.or]: [
+            { userExpiration: null },
+            { userExpiration: { [Op.gt]: Date.now() } },
+          ],
+        },
+      ],
+    },
+  });
   const passwordCorrect =
     user === null ? false : await bcrypt.compare(password, user.password);
 
@@ -26,12 +38,26 @@ exports.PostLogin = async (req, res, next) => {
     req.flash("errors", "Invalid user or password");
     return res.redirect("/");
   } else {
-    req.session.isLoggedIn = true;
-    req.session.user = user;
-    return req.session.save((err) => {
-      console.log(err);
-      res.redirect("/home");
-    });
+    const userType = user.userExpiration === null ? "Permanent" : "Temporal";
+    Records.create({
+      action: "Sing in",
+      fullName: user.fullName,
+      username: user.username,
+      userType: userType,
+      actionDate: moment().format("LLLL"),
+      userId: user.id,
+    })
+      .then(() => {
+        req.session.isLoggedIn = true;
+        req.session.user = user;
+        return req.session.save((err) => {
+          console.log(err);
+          res.redirect("/home");
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
@@ -80,7 +106,20 @@ exports.PostSignup = (req, res, next) => {
             password: hashedPassword,
           })
             .then((user) => {
-              res.redirect("/");
+              Records.create({
+                action: "Sing up",
+                fullName: user.fullName,
+                username: user.username,
+                userType: "Permanent",
+                actionDate: moment().format("LLLL"),
+                userId: user.id,
+              })
+                .then(() => {
+                  res.redirect("/");
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             })
             .catch((err) => {
               console.log(err);
@@ -135,13 +174,26 @@ exports.PostTemporalUser = async (req, res, next) => {
             password: hashedPassword,
             userExpiration: Date.now() + 1800000,
           })
-            .then((user) => {
-              req.session.isLoggedIn = true;
-              req.session.user = user;
-              return req.session.save((err) => {
-                console.log(err);
-                res.redirect("/home");
-              });
+            .then((createdUser) => {
+              Records.create({
+                action: "Sing up and Sing in",
+                fullName: createdUser.fullName,
+                username: createdUser.username,
+                userType: "Temporal",
+                actionDate: moment().format("LLLL"),
+                userId: createdUser.id,
+              })
+                .then(() => {
+                  req.session.isLoggedIn = true;
+                  req.session.user = user;
+                  return req.session.save((err) => {
+                    console.log(err);
+                    res.redirect("/home");
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             })
             .catch((err) => {
               console.log(err);

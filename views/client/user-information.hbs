@@ -12,14 +12,14 @@
                     <a class="btn btn-lg btn-primary mt-1 d-inline"
                         onclick="UpdateTemporalProfile('{{user.id}}', '{{user.fullName}}')">
                         {{else}}
-                        <a class="btn btn-lg btn-primary mt-1 d-inline" onclick="UpdatePermanentProfile('{{user.id}}')">
+                        <a type="button" class="btn btn-lg btn-primary mt-1 d-inline" onclick="UpdatePermanentProfile('{{user.id}}')">
                             {{/if}}
-                            <i class='bx bx-task'></i> Update
+                            <i class='bx bx-edit' ></i> Update
                             profile</a>
                 </p>
                 {{#if user.userExpiration}}
                 <form method="post" action="/make-permanent-user" class="text-center d-inline">
-                    <button type="submit" class="btn btn-info btn-lg mt-1 d-inline ms-2"><i class='bx bx-user'></i> Make
+                    <button type="submit" class="btn btn-info btn-lg mt-1 d-inline ms-2"><i class='bx bxs-user-pin' ></i> Make
                         permanent</button>
                     <input type="hidden" name="UserId" value="{{user.id}}">
                     <input type="hidden" name="_csrf" value="{{csrfToken}}">

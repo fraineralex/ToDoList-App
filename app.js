@@ -2,8 +2,9 @@ const path = require("path");
 const express = require("express");
 const expressHbs = require("express-handlebars");
 const sequelize = require("./util/database");
-const User = require("./models/User");
+const Users = require("./models/User");
 const Tasks = require("./models/Tasks");
+const Records = require("./models/Records");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const session = require("express-session");
@@ -65,7 +66,7 @@ app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
   }
-  User.findByPk(req.session.user.id)
+  Users.findByPk(req.session.user.id)
     .then((user) => {
       req.user = user;
       next();
@@ -94,8 +95,10 @@ app.use(errorController.Get404);
 
 //relationships between users and tasks
 
-Tasks.belongsTo(User, { constraint: true, onDelete: "CASCADE" });
-User.hasMany(Tasks);
+Tasks.belongsTo(Users, { constraint: true, onDelete: "CASCADE" });
+Users.hasMany(Tasks);
+Records.belongsTo(Users, { constraint: true, onDelete: "NO ACTION" });
+Users.hasMany(Records);
 
 sequelize
   .sync()
