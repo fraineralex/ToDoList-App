@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const path = require("path");
 
+/* Creating a new instance of Sequelize and connecting to the sqlite database */
 const sequelize = new Sequelize("sqlite::memory:", {
   dialect: "sqlite",
   storage: path.join(

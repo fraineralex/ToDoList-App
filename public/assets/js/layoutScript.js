@@ -22,6 +22,8 @@ function menuBtnChange() {
   }
 }
 
+/* This is a function that is called when the user clicks on the button with the class "new-task".
+This display a form whit the corresponding fields */
 let newTaskbtn = document.querySelector(".new-task");
 var csrfToken = document.getElementById("_csrf").value;
 
@@ -36,22 +38,29 @@ newTaskbtn.addEventListener("click", async () => {
     showCancelButton: true,
     focusConfirm: false,
     preConfirm: () => {
-      return [
-        document.getElementById("content").value
-      ];
+      return [document.getElementById("content").value];
     },
   });
 
   if (task) {
+    /* This is a validation to check if the user has entered a task. If the user has not entered a
+    task, it will show an error message. If the user has entered a task, it will submit the form. */
     if (task.filter(Boolean).length < 1) {
       Swal.fire("Error!", "Task content cannot be empty", "error");
-    }else{
+    } else {
       let form = document.querySelector("#frm-new-task");
       form.submit();
     }
   }
 });
 
+/**
+ * It takes the content of the task, the task id and the place where the task is located (inbox, today,
+ * week, month or someday) and then it opens a modal where the user can edit the task
+ * @param content - The content of the task
+ * @param taskId - the id of the task to be edited
+ * @param place - is the place where the task is located. It can be either "todo" or "done"
+ */
 async function EditTask(content, taskId, place) {
   const { value: task } = await Swal.fire({
     title: "Update your task",
@@ -63,22 +72,28 @@ async function EditTask(content, taskId, place) {
     showCancelButton: true,
     focusConfirm: false,
     preConfirm: () => {
-      return [
-        document.getElementById("content").value
-      ];
+      return [document.getElementById("content").value];
     },
   });
 
   if (task) {
+    /* A validation to check if the user has entered a task. If the user has not entered a
+        task, it will show an error message. If the user has entered a task, it will submit the
+    form. */
     if (task.filter(Boolean).length < 1) {
       Swal.fire("Error!", "Task content cannot be empty", "error");
-    }else{
+    } else {
       let form = document.querySelector("#frm-edit-task");
       form.submit();
     }
   }
 }
 
+/**
+ * It creates a form, adds the taskId and csrfToken to it, appends it to the body, and submits it for delete this task
+ * @param taskId - The id of the task to be deleted
+ * @param place - The place where the task is located.
+ */
 function DeleteTask(taskId, place) {
   Swal.fire({
     title: `Are you sure you want to delete this task?`,
@@ -118,6 +133,12 @@ function DeleteTask(taskId, place) {
   });
 }
 
+/**
+ * It's a function that opens a modal with a form, and when the user clicks on the submit button, it
+ * validates the form and if it's valid, it submits the form for update the profile information of a temporal user.
+ * @param userId - The user's id.
+ * @param fullName - The user's full name.
+ */
 async function UpdateTemporalProfile(userId, fullName) {
   const { value: formValues } = await Swal.fire({
     title: "Update your profile",
@@ -149,17 +170,26 @@ async function UpdateTemporalProfile(userId, fullName) {
   });
 
   if (formValues) {
+    /* It's a validation to check if the user has entered a task. If the user has not entered a
+           task, it will show an error message. If the user has entered a task, it will submit the
+       form. */
     if (formValues.filter(Boolean).length < 1) {
       Swal.fire("Error!", "You must complete at least one field.", "error");
-    }else if(formValues[2] !== formValues[3]) {
+    } else if (formValues[2] !== formValues[3]) {
       Swal.fire("Error!", "Password and confirm password no equals", "error");
-    } else{
+    } else {
       let form = document.querySelector("#frm-update-temporal-profile");
       form.submit();
     }
   }
 }
 
+/**
+ * It's a function that opens a modal with a form, and when the user clicks on the submit button, it
+ * validates the form and if it's valid, it submits the form for update the profile information of a permanent user.
+ * @param userId - The user's id.
+ * @param fullName - The user's full name.
+ */
 async function UpdatePermanentProfile(userId) {
   const { value: formValues } = await Swal.fire({
     title: "Update your profile",
@@ -194,13 +224,16 @@ async function UpdatePermanentProfile(userId) {
   });
 
   if (formValues) {
+    /* It's a validation to check if the user has entered a task. If the user has not entered a
+           task, it will show an error message. If the user has entered a task, it will submit the
+       form. */
     if (formValues.filter(Boolean).length < 1) {
       Swal.fire("Error!", "You must complete at least one field.", "error");
-    }else if(formValues[2] === ""){
+    } else if (formValues[2] === "") {
       Swal.fire("Error!", "You must insert your current password.", "error");
-    }else if(formValues[3] !== formValues[4]) {
+    } else if (formValues[3] !== formValues[4]) {
       Swal.fire("Error!", "Password and confirm password no equals", "error");
-    } else{
+    } else {
       let form = document.querySelector("#frm-update-permanent-profile");
       form.submit();
     }

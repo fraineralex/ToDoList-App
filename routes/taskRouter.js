@@ -1,8 +1,7 @@
+/* Importing the express module, the taskController module, the isAuth module, and creating a router. */
 const express = require("express");
-
 const taskController = require("../controllers/TaskController");
 const isAuth = require("../middleware/is-auth");
-
 const router = express.Router();
 
 //Home routes
