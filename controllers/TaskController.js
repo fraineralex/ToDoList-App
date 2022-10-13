@@ -1,5 +1,6 @@
 const Users = require("../models/User");
 const Tasks = require("../models/Tasks");
+const Records = require("../models/Records");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
@@ -20,13 +21,26 @@ exports.GetHome = async (req, res, next) => {
     user = await Users.findOne({ where: { id: req.user.id } });
   }
 
-  res.render("client/home", {
-    pageTitle: "Home",
-    homeActive: true,
-    place: "home",
-    tasks,
-    user: user.dataValues,
-  });
+  Users.destroy({
+    where: {
+      [Op.and]: [
+        { userExpiration: { [Op.not]: null } },
+        { userExpiration: { [Op.lt]: Date.now() } },
+      ],
+    },
+  })
+    .then(() => {
+      res.render("client/home", {
+        pageTitle: "Home",
+        homeActive: true,
+        place: "home",
+        tasks,
+        user: user.dataValues,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 /* This is a function that create a new task in the database and rending to home page*/
@@ -182,7 +196,7 @@ exports.GetUserInformation = async (req, res, next) => {
   });
 
   let defaultPassword;
-/* Comparing the password that the user has with the default password. */
+  /* Comparing the password that the user has with the default password. */
   defaultPassword = await bcrypt.compare(
     "default123",
     user.dataValues.password

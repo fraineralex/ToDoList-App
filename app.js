@@ -100,7 +100,7 @@ app.use(errorController.Get404);
 //database relationships between users, tasks and records
 Tasks.belongsTo(Users, { constraint: true, onDelete: "CASCADE" });
 Users.hasMany(Tasks);
-Records.belongsTo(Users, { constraint: true, onDelete: "NO ACTION" });
+Records.belongsTo(Users, { constraint: true, onDelete: "CASCADE" });
 Users.hasMany(Records);
 
 //launches the server
