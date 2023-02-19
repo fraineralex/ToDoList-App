@@ -1,4 +1,5 @@
 // Importing all the required modules.
+require('dotenv').config()
 const path = require("path");
 const express = require("express");
 const expressHbs = require("express-handlebars");
@@ -59,7 +60,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 // This is the middleware that is used to create a session and to use flash messages.
 app.use(
-  session({ secret: "anything", resave: true, saveUninitialized: false })
+  session({ secret: process.env.SECRET, resave: true, saveUninitialized: false })
 );
 app.use(csrfProtection);
 app.use(flash());
@@ -107,7 +108,10 @@ Users.hasMany(Records);
 sequelize
   .sync()
   .then((result) => {
-    app.listen(5000);
+    PORT = process.env.PORT || 5000
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`)
+    })
   })
   .catch((err) => {
     console.log(err);
