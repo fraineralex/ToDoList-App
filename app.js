@@ -7,8 +7,6 @@ const sequelize = require("./util/database");
 const Users = require("./models/User");
 const Tasks = require("./models/Tasks");
 const Records = require("./models/Records");
-const multer = require("multer");
-const { v4: uuidv4 } = require("uuid");
 const session = require("express-session");
 const flash = require("connect-flash");
 const csrf = require("csurf");
@@ -43,18 +41,6 @@ app.set("views", "views");
 //middleware
 app.use(express.urlencoded({ extended: false }));
 
-// Creating a file storage object that will be used to store the image in the images folder.
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, uuidv4() + "-" + file.originalname);
-  },
-});
-
-//static folders
-app.use(multer({ storage: fileStorage }).single("ImagePath"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 
