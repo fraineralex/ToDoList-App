@@ -1,11 +1,11 @@
 {
-  "name": "ToDoList",
+  "name": "to-do-list",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production node app.js --silent",
+    "start": "NODE_ENV=production node app.js",
     "pre-deploy": "node deleteLastDeploy.js",
     "deploy": "npm run pre-deploy && now --public && now alias"
   },
