@@ -60,7 +60,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 // This is the middleware that is used to create a session and to use flash messages.
 app.use(
-  session({ secret: process.env.SECRET, resave: true, saveUninitialized: false })
+  session({ secret: process.env.SECRET || 'anything', resave: true, saveUninitialized: false })
 );
 app.use(csrfProtection);
 app.use(flash());
@@ -110,7 +110,7 @@ sequelize
   .then((result) => {
     PORT = process.env.PORT || 5000
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`)
+      console.log(`Server running on port https://localhost:${PORT}`)
     })
   })
   .catch((err) => {
