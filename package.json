@@ -15,7 +15,7 @@
   "author": "Frainer Encarnación",
   "license": "ISC",
   "dependencies": {
-    "axios": "0.27.2",
+    "axios": "1.6.0",
     "bcryptjs": "2.4.3",
     "connect-flash": "0.1.1",
     "cross-env": "7.0.3",
